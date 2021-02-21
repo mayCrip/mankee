@@ -26,7 +26,7 @@ const Header = styled.header`
 `
 const LogoTitle = styled.h1`
   padding: 0 24px;
-  color: #6b6b6b;
+  color: ${(props) => props.theme.palette.common.darkGray};
 `
 const LogoLink = styled.a`
   text-decoration: none;
@@ -39,6 +39,7 @@ const Layout = ({ children, title = 'This is the default title' }: Props) => (
       <title>{title}</title>
       <meta charSet="utf-8" />
       <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      <link href="https://fonts.googleapis.com/css2?family=Open+Sans+Condensed:ital,wght@0,300;0,700;1,300&display=swap" rel="stylesheet" />
     </Head>
     <Header>
       <Link href="/">
