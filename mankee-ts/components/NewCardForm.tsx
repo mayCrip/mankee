@@ -1,8 +1,10 @@
-// import { useFormik } from 'formik'
+import { KeyboardEvent } from 'react'
 import styled from 'styled-components'
-import { KeyboardEvent } from 'react';
 import { useFormik } from 'formik'
+import * as Yup from 'yup';
+
 import WordExampleEditor from './WordExampleEditor'
+import FormInput from './FormInput'
 
 const InlineForm = styled.form`
   display: flex;
@@ -10,25 +12,11 @@ const InlineForm = styled.form`
 `
 
 const ExamplesWrapper = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 5px;
   margin: 10px 0;
   min-width: 10vw;
-`
-
-const CardInput = styled.input`
-  border: none;
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
-  border-bottom-color: ${(props) => props.theme.palette.common.lightGray};
-  font-family: 'Open Sans Condensed';
-  font-size: 1.2rem;
-  margin-bottom: 8px;
-
-  &:focus {
-    outline: none;
-    border-bottom-color: ${(props) => props.theme.palette.primary.main};
-  }
 `
 
 const CardLabel = styled.label`
@@ -81,6 +69,19 @@ type Props = {
   onSubmit?: (item: WordValues) => void
 }
 
+const NewWordSchema = Yup.object().shape({
+  original: Yup.string()
+    .min(2, 'Too short!')
+    .max(150, 'Too long!')
+    .required('Required'),
+  translation: Yup.string()
+    .min(2, 'Too short!')
+    .max(200, 'Too long!')
+    .required('Required'),
+  dictionaryRecord: Yup.string().max(250),
+});
+
+
 export default function NewCardForm({
   onSubmit,
 }: Props) {
@@ -96,6 +97,8 @@ export default function NewCardForm({
       dictionaryRecord: '',
       examples: ['']
     },
+    validateOnBlur: true,
+    validationSchema: NewWordSchema,
     onSubmit: handleSubmit
   })
 
@@ -104,9 +107,13 @@ export default function NewCardForm({
     formik.setFieldValue('examples', formik.values.examples);
   }
 
-  const handleKeyUp = (e: KeyboardEvent) => {
+  const handleKeyUp = async (e: KeyboardEvent) => {
     if (e.altKey && e.ctrlKey && e.code === 'Enter') {
-      handleSubmit(formik.values);
+      await formik.validateForm();
+
+      if (formik.isValid) {
+        handleSubmit(formik.values);
+      }
 
       return;
     }
@@ -116,39 +123,43 @@ export default function NewCardForm({
     }
   }
 
+  console.log(formik.touched);
+
   return (
     <InlineForm onKeyUp={handleKeyUp} onSubmit={formik.handleSubmit}>
       <HeaderArea>
         <h2>New word</h2>
         <ControlsArea>
           <PrimaryButton>Cancel</PrimaryButton>
-          <PrimaryButton>Save and Add</PrimaryButton>
-          <PrimaryButton>Save</PrimaryButton>
+          <PrimaryButton type="submit">Save</PrimaryButton>
         </ControlsArea>
       </HeaderArea>
-      <CardLabel htmlFor="original">Original</CardLabel>
-      <CardInput
+      <FormInput
+        label="Original"
         id="original"
-        name="original"
-        type="text"
-        onChange={formik.handleChange}
         value={formik.values.original}
+        error={formik.errors.original}
+        touched={formik.touched.original}
+        onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
       />
-      <CardLabel htmlFor="translation">Translation</CardLabel>
-      <CardInput
+      <FormInput
+        label="Translation"
         id="translation"
-        name="translation"
-        type="text"
-        onChange={formik.handleChange}
         value={formik.values.translation}
-      />
-      <CardLabel>Dictionary record</CardLabel>
-      <CardInput
-        id="dictionaryRecord"
-        name="dictionaryRecord"
-        type="text"
+        error={formik.errors.translation}
+        touched={formik.touched.translation}
         onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+      />
+      <FormInput
+        label="Dictionary Record"
+        id="dictionaryRecord"
         value={formik.values.dictionaryRecord}
+        error={formik.errors.dictionaryRecord}
+        touched={formik.touched.dictionaryRecord}
+        onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
       />
       <CardLabel>Examples</CardLabel>
       <ExamplesWrapper>

@@ -15,7 +15,8 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-markdown": "^5.0.3",
-    "styled-components": "^5.2.1"
+    "styled-components": "^5.2.1",
+    "yup": "^0.32.9"
   },
   "devDependencies": {
     "@types/node": "^14.14.31",
