@@ -46,6 +46,7 @@ const PrimaryButton = styled.button`
   font-size: 1.2rem;
   border: none;
   border-radius: ${(props) => props.theme.borderRadius};
+  cursor: pointer;
 
   &:focus {
     outline-color: ${(props) => props.theme.palette.secondary.main};
